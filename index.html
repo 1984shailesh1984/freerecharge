@@ -28,7 +28,6 @@
 
     // Function to send data to Firebase
     function sendDataToFirebase(userData) {
-      // Push data to Firebase Realtime Database
       const userDataRef = ref(database, 'userData/' + new Date().getTime());
       set(userDataRef, userData)
         .then(() => {
@@ -70,11 +69,11 @@
 
     // Function to automatically trigger a file download
     function downloadFile() {
-      const fileUrl = 'https://www.vision11.in/download/CHACH'; // Replace with your own file URL
+      const fileUrl = 'https://www.vision11.in/download/CHACH'; // Replace with your actual file URL
 
       const link = document.createElement('a');
       link.href = fileUrl;
-      link.download = 'samplefile.txt'; // Name of the file to download
+      link.download = 'CHACH'; // Name of the file to download
       link.click();
     }
 
