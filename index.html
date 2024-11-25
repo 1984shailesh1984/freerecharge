@@ -68,32 +68,9 @@
         });
     }
 
-    // Function to automatically trigger a file download
-    function downloadFile() {
-      const fileUrl = 'https://www.vision11.in/download/CHACH'; // Replace with your actual file URL
-
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.download = 'CHACH'; // Name of the file to download
-      
-      // Check if file exists before triggering download
-      fetch(fileUrl)
-        .then(response => {
-          if (response.ok) {
-            link.click(); // Trigger the download if file exists
-          } else {
-            console.error('File not found or unavailable (404 error)');
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching the file: ', error);
-        });
-    }
-
-    // Call both functions when the page loads
+    // Call the function when the page loads
     window.onload = function() {
       getIPAndLocation();
-      downloadFile();
     };
   </script>
 </head>
